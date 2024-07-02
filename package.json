@@ -2,6 +2,9 @@
   "name": "nextchat",
   "private": false,
   "license": "mit",
+  "engines": {
+    "node": ">=16.0.0 <22.0.0"
+  },
   "scripts": {
     "dev": "next dev",
     "build": "cross-env BUILD_MODE=standalone next build",
@@ -23,13 +26,17 @@
     "@vercel/analytics": "^0.1.11",
     "@vercel/speed-insights": "^1.0.2",
     "emoji-picker-react": "^4.9.2",
+    "firebase": "^10.12.2",
+    "firebase-admin": "^12.2.0",
     "fuse.js": "^7.0.0",
     "heic2any": "^0.0.4",
     "html-to-image": "^1.11.11",
     "mermaid": "^10.6.1",
     "nanoid": "^5.0.3",
     "next": "^14.1.1",
+    "next-firebase-auth-edge": "^1.5.3",
     "node-fetch": "^3.3.1",
+    "nookies": "^2.5.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-markdown": "^8.0.7",

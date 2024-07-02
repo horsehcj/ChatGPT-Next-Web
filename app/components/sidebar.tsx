@@ -15,6 +15,7 @@ import DragIcon from "../icons/drag.svg";
 
 import Locale from "../locales";
 
+import { app } from "../firebase/firebase";
 import { useAppConfig, useChatStore } from "../store";
 
 import {
@@ -30,6 +31,9 @@ import { Link, useNavigate } from "react-router-dom";
 import { isIOS, useMobileScreen } from "../utils";
 import dynamic from "next/dynamic";
 import { showConfirm, showToast } from "./ui-lib";
+
+import { useRouter } from "next/navigation";
+import { getAuth, signOut } from "firebase/auth";
 
 const ChatList = dynamic(async () => (await import("./chat-list")).ChatList, {
   loading: () => null,
@@ -143,6 +147,14 @@ export function SideBar(props: { className?: string }) {
 
   useHotKey();
 
+  const router = useRouter();
+
+  async function handleLogout() {
+    await signOut(getAuth(app));
+    await fetch("/api/logout");
+    router.push("/login");
+  }
+
   return (
     <div
       className={`${styles.sidebar} ${props.className} ${
@@ -155,37 +167,9 @@ export function SideBar(props: { className?: string }) {
     >
       <div className={styles["sidebar-header"]} data-tauri-drag-region>
         <div className={styles["sidebar-title"]} data-tauri-drag-region>
-          NextChat
+          CET Chat
         </div>
-        <div className={styles["sidebar-sub-title"]}>
-          Build your own AI assistant.
-        </div>
-        <div className={styles["sidebar-logo"] + " no-dark"}>
-          <ChatGptIcon />
-        </div>
-      </div>
-
-      <div className={styles["sidebar-header-bar"]}>
-        <IconButton
-          icon={<MaskIcon />}
-          text={shouldNarrow ? undefined : Locale.Mask.Name}
-          className={styles["sidebar-bar-button"]}
-          onClick={() => {
-            if (config.dontShowMaskSplashScreen !== true) {
-              navigate(Path.NewChat, { state: { fromHome: true } });
-            } else {
-              navigate(Path.Masks, { state: { fromHome: true } });
-            }
-          }}
-          shadow
-        />
-        <IconButton
-          icon={<PluginIcon />}
-          text={shouldNarrow ? undefined : Locale.Plugin.Name}
-          className={styles["sidebar-bar-button"]}
-          onClick={() => showToast(Locale.WIP)}
-          shadow
-        />
+        <button onClick={handleLogout}>Logout</button>
       </div>
 
       <div

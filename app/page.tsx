@@ -1,20 +1,20 @@
-import { Analytics } from "@vercel/analytics/react";
-
 import { Home } from "./components/home";
-
-import { getServerSideConfig } from "./config/server";
-
-const serverConfig = getServerSideConfig();
+import { getTokens } from "next-firebase-auth-edge";
+import { cookies } from "next/headers";
+import { notFound } from "next/navigation";
+import { clientConfig, serverConfig } from "./firebase/firebaseConfig";
 
 export default async function App() {
-  return (
-    <>
-      <Home />
-      {serverConfig?.isVercel && (
-        <>
-          <Analytics />
-        </>
-      )}
-    </>
-  );
+  const tokens = await getTokens(cookies(), {
+    apiKey: clientConfig.apiKey,
+    cookieName: serverConfig.cookieName,
+    cookieSignatureKeys: serverConfig.cookieSignatureKeys,
+    serviceAccount: serverConfig.serviceAccount,
+  });
+
+  if (!tokens) {
+    notFound();
+  }
+
+  return <Home />;
 }
