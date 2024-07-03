@@ -1,4 +1,4 @@
 import { initializeApp } from "firebase/app";
-import { clientConfig } from "./firebaseConfig";
+import { fbClientConfig } from "./firebaseConfig";
 
-export const app = initializeApp(clientConfig);
+export const app = initializeApp(fbClientConfig);

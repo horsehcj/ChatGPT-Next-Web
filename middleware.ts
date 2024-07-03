@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { authMiddleware, redirectToHome, redirectToLogin } from "next-firebase-auth-edge";
-import { clientConfig, serverConfig } from "./app/firebase/firebaseConfig";
+import { fbClientConfig, fbServerConfig } from "./app/firebase/firebaseConfig";
 
 const PUBLIC_PATHS = ['/register', '/login'];
 
@@ -8,11 +8,11 @@ export async function middleware(request: NextRequest) {
   return authMiddleware(request, {
     loginPath: "/api/login",
     logoutPath: "/api/logout",
-    apiKey: clientConfig.apiKey,
-    cookieName: serverConfig.cookieName,
-    cookieSignatureKeys: serverConfig.cookieSignatureKeys,
-    cookieSerializeOptions: serverConfig.cookieSerializeOptions,
-    serviceAccount: serverConfig.serviceAccount,
+    apiKey: fbClientConfig.apiKey,
+    cookieName: fbServerConfig.cookieName,
+    cookieSignatureKeys: fbServerConfig.cookieSignatureKeys,
+    cookieSerializeOptions: fbServerConfig.cookieSerializeOptions,
+    serviceAccount: fbServerConfig.serviceAccount,
     handleValidToken: async ({token, decodedToken}, headers) => {
       if (PUBLIC_PATHS.includes(request.nextUrl.pathname)) {
         return redirectToHome(request);

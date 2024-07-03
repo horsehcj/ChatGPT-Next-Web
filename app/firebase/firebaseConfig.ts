@@ -1,4 +1,4 @@
-export const serverConfig = {
+export const fbServerConfig = {
   cookieName: process.env.AUTH_COOKIE_NAME!,
   cookieSignatureKeys: [
     process.env.AUTH_COOKIE_SIGNATURE_KEY_CURRENT!,
@@ -18,7 +18,7 @@ export const serverConfig = {
   },
 };
 
-export const clientConfig = {
+export const fbClientConfig = {
   projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY!,
   authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,

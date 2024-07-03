@@ -15,7 +15,6 @@ import DragIcon from "../icons/drag.svg";
 
 import Locale from "../locales";
 
-import { app } from "../firebase/firebase";
 import { useAppConfig, useChatStore } from "../store";
 
 import {
@@ -32,8 +31,10 @@ import { isIOS, useMobileScreen } from "../utils";
 import dynamic from "next/dynamic";
 import { showConfirm, showToast } from "./ui-lib";
 
+import { app } from "../firebase/firebase";
 import { useRouter } from "next/navigation";
 import { getAuth, signOut } from "firebase/auth";
+import { useAuth } from "../firebase/AuthContext";
 
 const ChatList = dynamic(async () => (await import("./chat-list")).ChatList, {
   loading: () => null,
@@ -134,6 +135,7 @@ function useDragSideBar() {
 
 export function SideBar(props: { className?: string }) {
   const chatStore = useChatStore();
+  const userData = useAuth();
 
   // drag side bar
   const { onDragStart, shouldNarrow } = useDragSideBar();
@@ -167,7 +169,12 @@ export function SideBar(props: { className?: string }) {
     >
       <div className={styles["sidebar-header"]} data-tauri-drag-region>
         <div className={styles["sidebar-title"]} data-tauri-drag-region>
-          CET Chat
+          hi, {userData.user.displayName}
+        </div>
+        <div>
+          <p>Token: {userData.fsUser.tokens}</p>
+          <p>Organization: {userData.fsUser.organization}</p>
+          <p>Role: {userData.fsUser.role}</p>
         </div>
         <button onClick={handleLogout}>Logout</button>
       </div>
@@ -200,11 +207,11 @@ export function SideBar(props: { className?: string }) {
               <IconButton icon={<SettingsIcon />} shadow />
             </Link>
           </div>
-          <div className={styles["sidebar-action"]}>
+          {/* <div className={styles["sidebar-action"]}>
             <a href={REPO_URL} target="_blank" rel="noopener noreferrer">
               <IconButton icon={<GithubIcon />} shadow />
             </a>
-          </div>
+          </div> */}
         </div>
         <div>
           <IconButton

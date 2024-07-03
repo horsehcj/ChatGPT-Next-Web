@@ -114,6 +114,9 @@ export class ClientApi {
   masks() {}
 
   async share(messages: ChatMessage[], avatarUrl: string | null = null) {
+    // Don't want to send data to somewhere else
+    return "success";
+
     const msgs = messages
       .map((m) => ({
         from: m.role === "user" ? "human" : "gpt",
