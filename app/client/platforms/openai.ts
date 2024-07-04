@@ -30,6 +30,7 @@ import {
   getMessageImages,
   isVisionModel,
 } from "@/app/utils";
+import { updateUserToken } from "@/app/firebase/firebaseAction";
 
 export interface OpenAIListModelResponse {
   object: string;
@@ -102,6 +103,7 @@ export class ChatGPTApi implements LLMApi {
   }
 
   async chat(options: ChatOptions) {
+    const accessStore = useAccessStore.getState();
     const visionModel = isVisionModel(options.config.model);
     const messages = options.messages.map((v) => ({
       role: v.role,
@@ -145,7 +147,10 @@ export class ChatGPTApi implements LLMApi {
         method: "POST",
         body: JSON.stringify(requestPayload),
         signal: controller.signal,
-        headers: getHeaders(),
+        headers: {
+          ...getHeaders(),
+          fbEmail: accessStore.user?.email as string,
+        },
       };
 
       // make a fetch request
@@ -235,8 +240,12 @@ export class ChatGPTApi implements LLMApi {
               return finish();
             }
           },
-          onmessage(msg) {
+          async onmessage(msg) {
             if (msg.data === "[DONE]" || finished) {
+              await updateUserToken(
+                accessStore.user?.email as string,
+                responseText.length,
+              );
               return finish();
             }
             const text = msg.data;

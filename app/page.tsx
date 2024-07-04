@@ -6,14 +6,13 @@ import { getServerSideConfig } from "./config/server";
 import { Tokens, getTokens } from "next-firebase-auth-edge";
 import { cookies } from "next/headers";
 import { fbClientConfig, fbServerConfig } from "./firebase/firebaseConfig";
-import { User } from "./firebase/AuthContext";
+import { userT } from "./firebase/firebase";
 import { filterStandardClaims } from "next-firebase-auth-edge/lib/auth/claims";
 import { createUser, getUser } from "./firebase/firebaseAdmin";
-import { AuthProvider } from "./firebase/AuthProvider";
 
 const serverConfig = getServerSideConfig();
 
-const toUser = ({ decodedToken }: Tokens): User => {
+const toUser = ({ decodedToken }: Tokens): userT => {
   const {
     uid,
     email,
@@ -49,14 +48,12 @@ export default async function App() {
   const user = tokens ? toUser(tokens) : null;
   if (!user) return;
 
-  let fsUser = user && user.email ? await getUser(user.email, true) : null;
-  if (!fsUser) fsUser = await createUser(user.email as string);
+  let fbUser = user && user.email ? await getUser(user.email, true) : null;
+  if (!fbUser) fbUser = await createUser(user.email as string);
 
   return (
     <>
-      <AuthProvider user={user} fsUser={fsUser}>
-        <Home />
-      </AuthProvider>
+      <Home user={{ ...user, ...fbUser }} />
       {serverConfig?.isVercel && (
         <>
           <Analytics />

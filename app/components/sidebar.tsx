@@ -34,7 +34,7 @@ import { showConfirm, showToast } from "./ui-lib";
 import { app } from "../firebase/firebase";
 import { useRouter } from "next/navigation";
 import { getAuth, signOut } from "firebase/auth";
-import { useAuth } from "../firebase/AuthContext";
+import { useAccessStore } from "../store";
 
 const ChatList = dynamic(async () => (await import("./chat-list")).ChatList, {
   loading: () => null,
@@ -135,7 +135,7 @@ function useDragSideBar() {
 
 export function SideBar(props: { className?: string }) {
   const chatStore = useChatStore();
-  const userData = useAuth();
+  const accessStore = useAccessStore.getState();
 
   // drag side bar
   const { onDragStart, shouldNarrow } = useDragSideBar();
@@ -157,6 +157,8 @@ export function SideBar(props: { className?: string }) {
     router.push("/login");
   }
 
+  if (!accessStore.user) return; // throw error and handle it
+
   return (
     <div
       className={`${styles.sidebar} ${props.className} ${
@@ -169,12 +171,12 @@ export function SideBar(props: { className?: string }) {
     >
       <div className={styles["sidebar-header"]} data-tauri-drag-region>
         <div className={styles["sidebar-title"]} data-tauri-drag-region>
-          hi, {userData.user.displayName}
+          hi, {accessStore.user.displayName}
         </div>
         <div>
-          <p>Token: {userData.fsUser.tokens}</p>
-          <p>Organization: {userData.fsUser.organization}</p>
-          <p>Role: {userData.fsUser.role}</p>
+          <p>Used Tokens: {accessStore.user.used_tokens}</p>
+          <p>Organization: {accessStore.user.organization}</p>
+          <p>Role: {accessStore.user.role}</p>
         </div>
         <button onClick={handleLogout}>Logout</button>
       </div>
