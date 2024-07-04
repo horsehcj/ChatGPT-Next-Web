@@ -104,6 +104,7 @@ export class ChatGPTApi implements LLMApi {
 
   async chat(options: ChatOptions) {
     const accessStore = useAccessStore.getState();
+    const userEmail = accessStore.user?.email as string; // must have
     const visionModel = isVisionModel(options.config.model);
     const messages = options.messages.map((v) => ({
       role: v.role,
@@ -149,7 +150,7 @@ export class ChatGPTApi implements LLMApi {
         signal: controller.signal,
         headers: {
           ...getHeaders(),
-          fbEmail: accessStore.user?.email as string,
+          fbEmail: userEmail,
         },
       };
 
@@ -242,10 +243,7 @@ export class ChatGPTApi implements LLMApi {
           },
           async onmessage(msg) {
             if (msg.data === "[DONE]" || finished) {
-              await updateUserToken(
-                accessStore.user?.email as string,
-                responseText.length,
-              );
+              await updateUserToken(userEmail, responseText.length);
               return finish();
             }
             const text = msg.data;
