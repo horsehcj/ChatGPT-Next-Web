@@ -37,7 +37,9 @@ export type fbUserT = {
   role: string;
   last_used: number; // timestamp
   tokens: number;
-  used_tokens: number;
+  used_tokens: {
+    [key: string]: number;
+  };
   invited_by: string;
   organization: string;
 };
@@ -64,7 +66,7 @@ export const createUser = async (email: string) => {
     role: "user",
     last_used: Date.now(),
     tokens: 0,
-    used_tokens: 0,
+    used_tokens: {},
     invited_by: "",
     organization: "",
   };

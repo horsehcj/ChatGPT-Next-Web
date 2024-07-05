@@ -159,6 +159,8 @@ export function SideBar(props: { className?: string }) {
 
   if (!accessStore.user) return; // throw error and handle it
 
+  const todayDateStr = new Date().toISOString().slice(0, 10).replace(/-/g, "");
+
   return (
     <div
       className={`${styles.sidebar} ${props.className} ${
@@ -174,7 +176,7 @@ export function SideBar(props: { className?: string }) {
           hi, {accessStore.user.displayName}
         </div>
         <div>
-          <p>Used Tokens: {accessStore.user.used_tokens}</p>
+          <p>Used Tokens: {accessStore.user.used_tokens[todayDateStr] || 0}</p>
           <p>Organization: {accessStore.user.organization}</p>
           <p>Role: {accessStore.user.role}</p>
         </div>
