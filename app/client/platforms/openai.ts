@@ -243,7 +243,7 @@ export class ChatGPTApi implements LLMApi {
           },
           async onmessage(msg) {
             if (msg.data === "[DONE]" || finished) {
-              await updateUserToken(userEmail, responseText.length);
+              await updateUserToken(userEmail, responseText.length / 4); // one token 4 characters
               return finish();
             }
             const text = msg.data;
