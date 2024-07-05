@@ -151,6 +151,16 @@
   animation: slide-in ease 0.3s;
 }
 
+.sidebar-user-info-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+} 
+
+.sidebar-user-info {
+  font-size: 12px;
+}
+
 .sidebar-sub-title {
   font-size: 12px;
   font-weight: 400;

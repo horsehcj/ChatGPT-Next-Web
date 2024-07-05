@@ -12,6 +12,7 @@ import DeleteIcon from "../icons/delete.svg";
 import MaskIcon from "../icons/mask.svg";
 import PluginIcon from "../icons/plugin.svg";
 import DragIcon from "../icons/drag.svg";
+import ConnectionIcon from "../icons/connection.svg";
 
 import Locale from "../locales";
 
@@ -159,7 +160,11 @@ export function SideBar(props: { className?: string }) {
 
   if (!accessStore.user) return; // throw error and handle it
 
-  const todayDateStr = new Date().toISOString().slice(0, 10).replace(/-/g, "");
+  // sum up the used token of all array items
+  const usedToken = Object.values(accessStore.user.used_tokens).reduce(
+    (acc, cur) => Number(acc) + Number(cur),
+    0,
+  );
 
   return (
     <div
@@ -175,12 +180,19 @@ export function SideBar(props: { className?: string }) {
         <div className={styles["sidebar-title"]} data-tauri-drag-region>
           hi, {accessStore.user.displayName}
         </div>
-        <div>
-          <p>Used Tokens: {accessStore.user.used_tokens[todayDateStr] || 0}</p>
-          <p>Organization: {accessStore.user.organization}</p>
-          <p>Role: {accessStore.user.role}</p>
+        <div className={styles["sidebar-user-info-container"]}>
+          <div className={styles["sidebar-user-info"]}>
+            <p>Used Tokens: {usedToken || 0}</p>
+            <p>Organization: {accessStore.user.organization.toUpperCase()}</p>
+            <p>Role: {accessStore.user.role}</p>
+          </div>
+          <IconButton
+            icon={<ConnectionIcon />}
+            text="Logout"
+            onClick={handleLogout}
+            shadow
+          />
         </div>
-        <button onClick={handleLogout}>Logout</button>
       </div>
 
       <div
