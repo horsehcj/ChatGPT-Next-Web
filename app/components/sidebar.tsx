@@ -12,6 +12,7 @@ import DeleteIcon from "../icons/delete.svg";
 import MaskIcon from "../icons/mask.svg";
 import PluginIcon from "../icons/plugin.svg";
 import DragIcon from "../icons/drag.svg";
+import ConnectionIcon from "../icons/connection.svg";
 
 import Locale from "../locales";
 
@@ -30,6 +31,11 @@ import { Link, useNavigate } from "react-router-dom";
 import { isIOS, useMobileScreen } from "../utils";
 import dynamic from "next/dynamic";
 import { showConfirm, showToast } from "./ui-lib";
+
+import { app } from "../firebase/firebase";
+import { useRouter } from "next/navigation";
+import { getAuth, signOut } from "firebase/auth";
+import { useAccessStore } from "../store";
 
 const ChatList = dynamic(async () => (await import("./chat-list")).ChatList, {
   loading: () => null,
@@ -130,6 +136,7 @@ function useDragSideBar() {
 
 export function SideBar(props: { className?: string }) {
   const chatStore = useChatStore();
+  const accessStore = useAccessStore.getState();
 
   // drag side bar
   const { onDragStart, shouldNarrow } = useDragSideBar();
@@ -143,6 +150,22 @@ export function SideBar(props: { className?: string }) {
 
   useHotKey();
 
+  const router = useRouter();
+
+  async function handleLogout() {
+    await signOut(getAuth(app));
+    await fetch("/api/logout");
+    router.push("/login");
+  }
+
+  if (!accessStore.user) return; // throw error and handle it
+
+  // sum up the used token of all array items
+  const usedToken = Object.values(accessStore.user.used_tokens).reduce(
+    (acc, cur) => Number(acc) + Number(cur),
+    0,
+  );
+
   return (
     <div
       className={`${styles.sidebar} ${props.className} ${
@@ -155,37 +178,21 @@ export function SideBar(props: { className?: string }) {
     >
       <div className={styles["sidebar-header"]} data-tauri-drag-region>
         <div className={styles["sidebar-title"]} data-tauri-drag-region>
-          NextChat
+          hi, {accessStore.user.displayName}
         </div>
-        <div className={styles["sidebar-sub-title"]}>
-          Build your own AI assistant.
+        <div className={styles["sidebar-user-info-container"]}>
+          <div className={styles["sidebar-user-info"]}>
+            <p>Used Tokens: {usedToken || 0}</p>
+            <p>Organization: {accessStore.user.organization.toUpperCase()}</p>
+            <p>Role: {accessStore.user.role}</p>
+          </div>
+          <IconButton
+            icon={<ConnectionIcon />}
+            text="Logout"
+            onClick={handleLogout}
+            shadow
+          />
         </div>
-        <div className={styles["sidebar-logo"] + " no-dark"}>
-          <ChatGptIcon />
-        </div>
-      </div>
-
-      <div className={styles["sidebar-header-bar"]}>
-        <IconButton
-          icon={<MaskIcon />}
-          text={shouldNarrow ? undefined : Locale.Mask.Name}
-          className={styles["sidebar-bar-button"]}
-          onClick={() => {
-            if (config.dontShowMaskSplashScreen !== true) {
-              navigate(Path.NewChat, { state: { fromHome: true } });
-            } else {
-              navigate(Path.Masks, { state: { fromHome: true } });
-            }
-          }}
-          shadow
-        />
-        <IconButton
-          icon={<PluginIcon />}
-          text={shouldNarrow ? undefined : Locale.Plugin.Name}
-          className={styles["sidebar-bar-button"]}
-          onClick={() => showToast(Locale.WIP)}
-          shadow
-        />
       </div>
 
       <div
@@ -216,11 +223,11 @@ export function SideBar(props: { className?: string }) {
               <IconButton icon={<SettingsIcon />} shadow />
             </Link>
           </div>
-          <div className={styles["sidebar-action"]}>
+          {/* <div className={styles["sidebar-action"]}>
             <a href={REPO_URL} target="_blank" rel="noopener noreferrer">
               <IconButton icon={<GithubIcon />} shadow />
             </a>
-          </div>
+          </div> */}
         </div>
         <div>
           <IconButton

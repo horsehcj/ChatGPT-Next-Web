@@ -30,6 +30,8 @@ import { getClientConfig } from "../config/client";
 import { ClientApi } from "../client/api";
 import { useAccessStore } from "../store";
 import { identifyDefaultClaudeModel } from "../utils/checkers";
+import { UserInfo } from "firebase/auth";
+import { fbUserT } from "../firebase/firebaseAdmin";
 
 export function Loading(props: { noLogo?: boolean }) {
   return (
@@ -188,10 +190,12 @@ export function useLoadData() {
   }, []);
 }
 
-export function Home() {
+export function Home({ user }: { user: fbUserT & UserInfo }) {
   useSwitchTheme();
   useLoadData();
   useHtmlLang();
+
+  useAccessStore.setState({ user: user as UserInfo & fbUserT });
 
   useEffect(() => {
     console.log("[Config] got config from build time", getClientConfig());
